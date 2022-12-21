@@ -18,6 +18,7 @@ const Actor = sequelize.define(
   {
     indexes: [
       {
+        unique: true,
         fields: ['name'],
       },
     ],

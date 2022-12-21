@@ -58,9 +58,15 @@ module.exports = {
       const newMovies = movieHelper.formatArrayOfMovieObjects(moviesData);
 
       const movies = await Movie.bulkCreate(newMovies, {
-        include: includeOptions,
+        updateOnDuplicate: ['title'],
+        include: [
+          {
+            model: Actor,
+            attributes: ['id', 'name'],
+            updateOnDuplicate: ['movieId', 'actorId', 'name'],
+          },
+        ],
       });
-
       res.status(statusCodes.OK).json(movies);
     } catch (e) {
       next(e);
@@ -71,8 +77,7 @@ module.exports = {
     try {
       const { actors, ...movieData } = req.body;
 
-      // const newActors = actors.map((name) => ({ name }));
-      const arr = await Promise.all(
+      const arrayOfActorModels = await Promise.all(
         actors.map(async (name) => {
           const [actor] = await Actor.findOrCreate({ where: { name } });
 
@@ -89,7 +94,7 @@ module.exports = {
         }
       );
 
-      await newMovie.addActors(arr);
+      await newMovie.addActors(arrayOfActorModels);
 
       res.status(statusCodes.OK).json(newMovie);
     } catch (e) {
