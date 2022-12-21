@@ -1,0 +1,15 @@
+logs
+*.log
+
+database.sqlite
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+/.idea/
+# dotenv environment variables file
+.env
+.env.test
+
+
