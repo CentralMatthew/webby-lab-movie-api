@@ -63,12 +63,10 @@ module.exports = {
 
       const movies = await Movie.bulkCreate(newMovies, {
         updateOnDuplicate: ['title'],
-        ignoreDuplicates: true,
         include: [
           {
             model: Actor,
-            attributes: [],
-            updateOnDuplicate: ['movieId', 'actorId', 'name'],
+            updateOnDuplicate: ['movie_id', 'actor_id', 'name'],
           },
         ],
         transaction: t,
