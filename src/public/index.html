@@ -2,18 +2,20 @@
 <html lang='en'>
 <head>
   <meta charset='UTF-8'>
-  <title>Title</title>
-  <link rel='stylesheet' href='index.css' />
+  <title>Login</title>
+  <link rel='stylesheet' href='style.css'>
+
 </head>
 <body>
-<div class='wrapper'>
-  <h3>Upload Movie File</h3>
-  <form target='_blank' class='form' action='movies/import' method='post' enctype='multipart/form-data'>
-    <input type='file' id='movies' name='movies'>
-    <div>
-      <button class='form-submit-button'>Submit</button>
-    </div>
-  </form>
+<div class='login-page'>
+  <div class='form'>
+    <form class='login-form' action='/sessions' method='post'>
+      <input name='email' type='text' placeholder='Email' />
+      <input name='password' type='password' placeholder='Password' />
+      <button type='submit'>Login</button>
+    </form>
+  </div>
 </div>
 </body>
 </html>
+

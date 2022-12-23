@@ -1,4 +1,5 @@
 const { bcryptHelper, jwtHelper } = require('../utils');
+const { TOKEN } = require('../constants/tokens');
 
 module.exports = {
   create: async (req, res, next) => {
@@ -10,9 +11,11 @@ module.exports = {
 
       const token = jwtHelper.generateToken(id, name);
 
-      res.json({
-        token,
+      res.cookie(TOKEN, token, {
+        httpOnly: true,
       });
+
+      res.redirect('/import');
     } catch (e) {
       next(e);
     }

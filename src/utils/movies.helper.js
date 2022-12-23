@@ -14,7 +14,11 @@ module.exports = {
         year,
         format,
         actors: actorsString.split(', ').map((name) => ({ name })),
-      }));
+      }))
+      .filter(
+        (value, index, self) =>
+          self.findIndex((movie) => movie.title === value.title) === index
+      );
   },
 
   searchQueryBuilder: (searchParams) => {

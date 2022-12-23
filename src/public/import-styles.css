@@ -1,9 +1,11 @@
+@import url(https://fonts.googleapis.com/css?family=Roboto:300);
 html {
     text-align: center;
 }
 
 body {
     background: #494D5F;
+    font-family: "Roboto", sans-serif;
 }
 
 h3 {
@@ -56,8 +58,7 @@ input[type=file]::file-selector-button:hover {
     cursor: pointer;
     border-radius: 3px;
     font-size: 14px;
-    font-weight: 500;
-    line-height: 16px;
+    font-family: "Roboto", sans-serif;
     padding: 2px 16px;
     margin-top: 10px;
     height: 38px;

@@ -2,6 +2,7 @@ const { Movie, Actor } = require('../models');
 const { statusCodes, successResults } = require('../constants');
 const { movieHelper } = require('../utils');
 const { searchQueryBuilder } = require('../utils/movies.helper');
+const { sequelize } = require('../config/database.config');
 
 const includeOptions = [
   {
@@ -36,13 +37,17 @@ module.exports = {
 
       const searchConditions = searchQueryBuilder(searchParams);
 
+      const sortOption =
+        sort === 'id' ? sort : sequelize.fn('lower', sequelize.col(sort));
+
       const movies = await Movie.findAll({
         include: includeOptions,
         where: searchConditions,
         subQuery: false,
+        group: 'title',
         limit,
         offset: offset * limit,
-        order: [[sort, order]],
+        order: [[sortOption, order]],
       });
 
       res.status(statusCodes.OK).json(movies);
@@ -52,23 +57,28 @@ module.exports = {
   },
 
   importMovies: async (req, res, next) => {
+    const t = await sequelize.transaction();
     try {
-      const moviesData = req.files.movies.data.toString();
-
-      const newMovies = movieHelper.formatArrayOfMovieObjects(moviesData);
+      const newMovies = movieHelper.formatArrayOfMovieObjects(req.moviesData);
 
       const movies = await Movie.bulkCreate(newMovies, {
         updateOnDuplicate: ['title'],
+        ignoreDuplicates: true,
         include: [
           {
             model: Actor,
-            attributes: ['id', 'name'],
+            attributes: [],
             updateOnDuplicate: ['movieId', 'actorId', 'name'],
           },
         ],
+        transaction: t,
       });
+
+      await t.commit();
+
       res.status(statusCodes.OK).json(movies);
     } catch (e) {
+      await t.rollback();
       next(e);
     }
   },
@@ -79,24 +89,32 @@ module.exports = {
 
       const arrayOfActorModels = await Promise.all(
         actors.map(async (name) => {
-          const [actor] = await Actor.findOrCreate({ where: { name } });
+          const [actor] = await Actor.findOrCreate({
+            where: { name },
+          });
 
           return actor;
         })
       );
 
-      const newMovie = await Movie.create(
-        {
-          ...movieData,
-        },
-        {
-          include: includeOptions,
-        }
-      );
+      const newMovie = await Movie.create({
+        ...movieData,
+      });
 
       await newMovie.addActors(arrayOfActorModels);
 
-      res.status(statusCodes.OK).json(newMovie);
+      const result = await Movie.findOne({
+        where: { title: newMovie.title },
+        include: [
+          {
+            model: Actor,
+            through: { attributes: [] },
+            attributes: ['id', 'name'],
+          },
+        ],
+      });
+
+      res.status(statusCodes.OK).json(result);
     } catch (e) {
       next(e);
     }
@@ -123,6 +141,7 @@ module.exports = {
         where: {
           id: movie.id,
         },
+        returning: true,
       });
 
       if (actors) {
@@ -137,7 +156,18 @@ module.exports = {
         await movie.setActors(actorsArrayRecords);
       }
 
-      res.status(statusCodes.OK).json(successResults.SUCCESS_UPDATE);
+      const result = await Movie.findOne({
+        where: { id: movie.id },
+        include: [
+          {
+            model: Actor,
+            through: { attributes: [] },
+            attributes: ['id', 'name'],
+          },
+        ],
+      });
+
+      res.status(statusCodes.OK).json(result);
     } catch (e) {
       next(e);
     }

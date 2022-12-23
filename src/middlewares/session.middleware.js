@@ -1,19 +1,16 @@
 const { ErrorHandler } = require('../errors/ErrorHandler');
-const { userValidator } = require('../validators');
 const statusCode = require('../constants/statusCodes');
-const {
-  INVALID_KEY_VALUE,
-  NO_TOKEN,
-  WRONG_TOKEN,
-} = require('../errors/error-message');
+const { NO_TOKEN, WRONG_TOKEN } = require('../errors/error-message');
 const { jwtHelper } = require('../utils');
+const { TOKEN } = require('../constants/tokens');
 
 module.exports = {
   checkAuthToken: async (req, res, next) => {
     try {
       const authorizationHeader = req.headers.authorization;
+      const tokenFromCookie = req.cookies.token;
 
-      if (!authorizationHeader) {
+      if (!authorizationHeader && !tokenFromCookie) {
         throw new ErrorHandler(
           statusCode.UNAUTHORIZED,
           NO_TOKEN.message,
@@ -21,7 +18,7 @@ module.exports = {
         );
       }
 
-      const token = authorizationHeader.split(' ')[1];
+      const token = tokenFromCookie || authorizationHeader.split(' ')[1];
 
       const user = await jwtHelper.verifyToken(token);
 
@@ -38,6 +35,7 @@ module.exports = {
       next();
     } catch (e) {
       next(e);
+      res.clearCookie(TOKEN);
     }
   },
 };

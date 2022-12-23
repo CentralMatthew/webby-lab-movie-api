@@ -5,3 +5,4 @@ module.exports.statusCodes = require('./statusCodes');
 module.exports.videoFormatsEnum = require('./videoFormatsEnum');
 module.exports.regexp = require('./regexp');
 module.exports.successResults = require('./successResults');
+module.exports.fileExtensions = require('./fileExtensions');

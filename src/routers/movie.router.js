@@ -1,6 +1,10 @@
 const router = require('express').Router();
 const { movieController } = require('../controllers');
-const { sessionMiddleware, movieMiddleware } = require('../middlewares');
+const {
+  sessionMiddleware,
+  movieMiddleware,
+  fileMiddleware,
+} = require('../middlewares');
 
 router.use('/', sessionMiddleware.checkAuthToken);
 
@@ -11,7 +15,12 @@ router.post(
   movieMiddleware.checkIsMovieUnique,
   movieController.create
 );
-router.post('/import', movieController.importMovies);
+router.post(
+  '/import',
+  fileMiddleware.isValidFileExtension,
+  fileMiddleware.isFileNotEmpty,
+  movieController.importMovies
+);
 
 router.use('/:movieId', movieMiddleware.checkIsMovieExist);
 

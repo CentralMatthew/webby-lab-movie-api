@@ -19,6 +19,11 @@ module.exports = {
     code: '400.3',
   },
 
+  FILE_IS_EMPTY: {
+    message: 'File is empty',
+    code: '400.4',
+  },
+
   NO_TOKEN: {
     message: 'No token',
     code: '401.1',
@@ -29,24 +34,9 @@ module.exports = {
     code: '401.2',
   },
 
-  WRONG_TEMPLATE: {
-    message: 'Wrong template',
-    code: '401.3',
-  },
-
-  EMAIL_NOT_VERIFIED: {
-    message: 'Email not verified',
-    code: '401.4',
-  },
-
   WRONG_EMAIL_OR_PASSWORD: {
     message: 'Wrong email or password',
     code: '403.1',
-  },
-
-  ONLY_ONE_AVATAR_FOR_USER: {
-    message: 'User can have only one avatar',
-    code: '403.2',
   },
 
   ROUTE_NOT_FOUND: {
@@ -64,13 +54,8 @@ module.exports = {
     code: '404.3',
   },
 
-  FILESIZE_TOO_BIG: {
-    message: 'File size too big',
-    code: '413.1',
-  },
-
   WRONG_FILE_FORMAT: {
-    message: 'Wrong file format',
+    message: 'Wrong file format. File must have .txt extensions',
     code: '415.1',
   },
 };
