@@ -4,16 +4,6 @@ const { movieHelper } = require('../utils');
 const { searchQueryBuilder } = require('../utils/movies.helper');
 const { sequelize } = require('../config/database.config');
 
-const includeOptions = [
-  {
-    model: Actor,
-    attributes: ['id', 'name'],
-    through: {
-      attributes: [],
-    },
-  },
-];
-
 module.exports = {
   getById: async (req, res, next) => {
     try {
@@ -41,7 +31,15 @@ module.exports = {
         sort === 'id' ? sort : sequelize.fn('lower', sequelize.col(sort));
 
       const movies = await Movie.findAll({
-        include: includeOptions,
+        include: [
+          {
+            model: Actor,
+            attributes: [],
+            through: {
+              attributes: [],
+            },
+          },
+        ],
         where: searchConditions,
         subQuery: false,
         group: 'title',
