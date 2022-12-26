@@ -1,7 +1,7 @@
 const { Movie, Actor } = require('../models');
 const { statusCodes, successResults } = require('../constants');
 const { movieHelper } = require('../utils');
-const { searchQueryBuilder } = require('../utils/movies.helper');
+const { searchQueryBuilder, sortComparer } = require('../utils/movies.helper');
 const { sequelize } = require('../config/database.config');
 
 module.exports = {
@@ -25,12 +25,13 @@ module.exports = {
         ...searchParams
       } = req.query;
 
+      let movies;
       const searchConditions = searchQueryBuilder(searchParams);
 
       const sortOption =
         sort === 'id' ? sort : sequelize.fn('lower', sequelize.col(sort));
 
-      const movies = await Movie.findAll({
+      movies = await Movie.findAll({
         include: [
           {
             model: Actor,
@@ -47,6 +48,10 @@ module.exports = {
         offset: offset * limit,
         order: [[sortOption, order]],
       });
+
+      if (sort === 'title') {
+        movies = movies.sort(sortComparer);
+      }
 
       res.status(statusCodes.OK).json(movies);
     } catch (e) {
