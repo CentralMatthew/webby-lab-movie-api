@@ -50,7 +50,7 @@ module.exports = {
       });
 
       if (sort === 'title') {
-        movies = movies.sort(sortComparer);
+        movies = movies.sort((a, b) => sortComparer(a, b, order));
       }
 
       res.status(statusCodes.OK).json(movies);

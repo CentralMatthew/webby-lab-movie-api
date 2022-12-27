@@ -63,5 +63,8 @@ module.exports = {
     return whereConditions;
   },
 
-  sortComparer: (a, b) => a.title.localeCompare(b.title),
+  sortComparer: (a, b, order) =>
+    order.toLowerCase() === 'asc'
+      ? a.title.localeCompare(b.title)
+      : b.title.localeCompare(a.title),
 };
